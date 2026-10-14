@@ -18,6 +18,10 @@ jobs:
           go-version: ${{ matrix.go }}
       - run: go vet ./...
       - run: go test ./...
+      # Skipped, and shown as skipped, when the repository has no
+      # ROICAI_API_KEY secret, such as in pull requests from forks.
+      - name: Live API tests
+        run: go test -count=1 -v -run '^TestLive' .
         env:
           ROICAI_API_KEY: ${{ secrets.ROICAI_API_KEY }}
 
