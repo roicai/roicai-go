@@ -58,7 +58,7 @@ func main() {
 		log.Fatal(err)
 	}
 	for _, year := range statements.Results {
-		fmt.Println(*year.FiscalYear, *year.IsSalesRevenueTurnover)
+		fmt.Printf("%d revenue: %.0f\n", *year.FiscalYear, *year.IsSalesRevenueTurnover)
 	}
 
 	latest, err := c.StockPrices.Latest.Retrieve(ctx, &stockprices.RetrieveLatestStockPriceRequest{Identifier: "NASDAQ:AAPL"})
@@ -119,16 +119,16 @@ configured := client.NewClient(
 | Option | Default | Description |
 |---|---|---|
 | `option.WithAPIKey` | `ROICAI_API_KEY` | Your API key, sent as `Authorization: Bearer <key>`. |
+| `option.WithAPIKeyFunc` | | A function that returns the API key for each request, such as from a secret store. |
 | `option.WithBaseURL` | `https://api.roic.ai` | URL that requests are made to. |
 | `option.WithHTTPClient` | `http.DefaultClient` | [The `*http.Client` that sends requests.](#using-a-custom-http-client) |
 | `option.WithHTTPHeader` | | Headers sent with every request. |
-| `option.WithQueryParameters` | | Query parameters sent with every request. |
 | `option.WithMaxAttempts` | `2` | [How many times to try a request.](#retries) |
 | `option.WithoutRetries` | | Turns retries off. |
 
 ### Request options
 
-Every method takes the same options as its last arguments, which apply to that request only and take precedence over the client's:
+Every method takes the same options as its last arguments, which apply to that request only and take precedence over the client's. A request also takes `option.WithQueryParameters`, for query parameters the library doesn't have a field for:
 
 ```go
 ticker, err := c.Tickers.Retrieve(
@@ -140,7 +140,7 @@ ticker, err := c.Tickers.Retrieve(
 
 ### Retries
 
-The library retries a request that fails with `408`, `429` or a `5xx` status. By default it makes 2 attempts. It waits for the time in the response's `Retry-After` or `X-RateLimit-Reset` header, or else backs off exponentially from one second. Set the number of attempts with `option.WithMaxAttempts`, or turn retries off with `option.WithoutRetries`.
+The library retries a request that fails with `408`, `429` or a `5xx` status. By default it makes 2 attempts. It waits for the time in the response's `Retry-After` header, or for a `429` its `X-RateLimit-Reset`, or else backs off exponentially from one second. When the wait would be longer than a minute, such as a `429` once your daily quota runs out, it returns the error at once instead of retrying. Set the number of attempts with `option.WithMaxAttempts`, or turn retries off with `option.WithoutRetries`.
 
 ### Configuring timeouts
 
@@ -157,7 +157,7 @@ A call that times out returns an error that wraps `context.DeadlineExceeded`. To
 
 ### Examining responses
 
-Each group has a `WithRawResponse` client whose methods also return the status code and headers, such as the request ID to quote when you contact support:
+A page from a list method has the status code and headers of its response in `page.StatusCode` and `page.Header`. For other methods, each group has a `WithRawResponse` client whose methods also return them, such as the request ID to quote when you contact support:
 
 ```go
 raw, err := c.Tickers.WithRawResponse.Retrieve(ctx, &roicai.RetrieveTickerRequest{Identifier: "NASDAQ:AAPL"})

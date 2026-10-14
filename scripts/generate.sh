@@ -15,14 +15,19 @@ python="${PYTHON:-python3}"
 
 # Go files written by hand; generation keeps them and replaces every other one.
 hand_written=(
+  doc.go
   version.go
   example_test.go
   sdk_test.go
   live_test.go
+  client/doc.go
+  core/doc.go
   core/error_message.go
   core/page_all.go
   internal/page_token.go
+  internal/request_checks.go
   internal/version.go
+  option/doc.go
 )
 
 fetched="$(mktemp)"

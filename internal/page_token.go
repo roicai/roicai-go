@@ -25,3 +25,19 @@ func PageToken(nextPageURL *string) *string {
 	}
 	return &token
 }
+
+// WithPageToken returns query with its `page` set to token, or query itself
+// when token is nil. It copies query rather than changing it, because pages
+// of one list can be fetched at the same time and share the first page's
+// query.
+func WithPageToken(query url.Values, token *string) url.Values {
+	if token == nil {
+		return query
+	}
+	copied := make(url.Values, len(query)+1)
+	for name, values := range query {
+		copied[name] = values
+	}
+	copied.Set("page", *token)
+	return copied
+}

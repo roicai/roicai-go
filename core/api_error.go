@@ -38,10 +38,10 @@ func (a *APIError) Error() string {
 		return ""
 	}
 	if a.err == nil {
-		return fmt.Sprintf("%d", a.StatusCode)
+		return fmt.Sprintf("%d: %s", a.StatusCode, errorMessage(a.StatusCode, nil))
 	}
 	if a.StatusCode == 0 {
 		return a.err.Error()
 	}
-	return fmt.Sprintf("%d: %s", a.StatusCode, errorMessage(a.err))
+	return fmt.Sprintf("%d: %s", a.StatusCode, errorMessage(a.StatusCode, a.err))
 }

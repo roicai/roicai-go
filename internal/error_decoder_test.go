@@ -47,7 +47,7 @@ func TestErrorDecoder(t *testing.T) {
 			giveStatusCode: http.StatusNotFound,
 			giveHeader:     http.Header{},
 			giveBody:       `Resource not found`,
-			wantError:      core.NewAPIError(http.StatusNotFound, http.Header{}, errors.New("Resource not found")),
+			wantError:      &InternalTestNotFoundError{APIError: core.NewAPIError(http.StatusNotFound, http.Header{}, errors.New("Resource not found"))},
 		},
 	}
 
@@ -123,7 +123,7 @@ func TestErrorDecoderWildcards(t *testing.T) {
 			description:    "wildcard with malformed body falls back to the API error",
 			giveStatusCode: http.StatusForbidden,
 			giveBody:       `<html><body>Forbidden</body></html>`,
-			wantError:      core.NewAPIError(http.StatusForbidden, http.Header{}, errors.New(`<html><body>Forbidden</body></html>`)),
+			wantError:      &InternalTestClientError{APIError: core.NewAPIError(http.StatusForbidden, http.Header{}, errors.New(`<html><body>Forbidden</body></html>`))},
 		},
 		{
 			description:    "range boundaries are inclusive",

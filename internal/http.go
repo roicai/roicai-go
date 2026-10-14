@@ -17,7 +17,7 @@ type HTTPClient interface {
 func ResolveBaseURL(values ...string) string {
 	for _, value := range values {
 		if value != "" {
-			return value
+			return trimBaseURL(value)
 		}
 	}
 	return ""

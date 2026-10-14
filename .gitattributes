@@ -1,14 +1,24 @@
 # Fern generates every Go file except the hand-written ones listed in
 # scripts/generate.sh; GitHub collapses generated files in diffs.
 *.go linguist-generated=true
+doc.go linguist-generated=false
 version.go linguist-generated=false
+client/doc.go linguist-generated=false
+core/doc.go linguist-generated=false
+option/doc.go linguist-generated=false
+internal/request_checks.go linguist-generated=false
 example_test.go linguist-generated=false
 sdk_test.go linguist-generated=false
 live_test.go linguist-generated=false
 core/error_message.go linguist-generated=false
 core/page_all.go linguist-generated=false
 internal/page_token.go linguist-generated=false
-internal/version.go linguist-generated=false
+internal/doc.go linguist-generated=false
+version.go linguist-generated=false
+client/doc.go linguist-generated=false
+core/doc.go linguist-generated=false
+option/doc.go linguist-generated=false
+internal/request_checks.go linguist-generated=false
 go.sum linguist-generated=true
 openapi.json linguist-generated=true
 reference.md linguist-generated=true

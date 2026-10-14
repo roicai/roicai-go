@@ -73,6 +73,9 @@ type CallResponse struct {
 
 // Call issues an API call according to the given call parameters.
 func (c *Caller) Call(ctx context.Context, params *CallParams) (*CallResponse, error) {
+	if err := checkPath(params.Method, params.URL); err != nil {
+		return nil, err
+	}
 	url := buildURL(params.URL, params.QueryParameters)
 	req, err := newRequest(
 		ctx,

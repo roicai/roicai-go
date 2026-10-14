@@ -69,9 +69,9 @@ func NewErrorDecoder(errorCodes ErrorCodes, errorCodesOverrides ...ErrorCodes) E
 		}
 		customError := newErrorFunc(apiError)
 		if err := json.NewDecoder(bytes.NewReader(raw)).Decode(customError); err != nil {
-			// If we fail to decode the error, we return the
-			// API error as-is.
-			return apiError
+			// The body isn't the documented error, such as a
+			// proxy's HTML page: keep the typed error, with no Body.
+			return customError
 		}
 		return customError
 	}

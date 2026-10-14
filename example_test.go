@@ -35,7 +35,7 @@ func Example() {
 		log.Fatal(err)
 	}
 	for _, year := range statements.Results {
-		fmt.Println(*year.FiscalYear, *year.IsSalesRevenueTurnover)
+		fmt.Printf("%d revenue: %.0f\n", *year.FiscalYear, *year.IsSalesRevenueTurnover)
 	}
 }
 

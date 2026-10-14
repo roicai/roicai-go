@@ -12,9 +12,11 @@ These files are written by hand, and generation keeps them:
 |---|---|
 | `internal/version.go` | The module's version, sent in the `User-Agent` as `roicai-go/<version>`. |
 | `version.go` | Exports that version as `roicai.Version`. |
-| `internal/page_token.go` | Takes the `page` token out of a list's `next_page_url`, so the next page is the same request with that token. |
+| `internal/page_token.go` | Takes the `page` token out of a list's `next_page_url`, so the next page is the same request with that token, on a copy of the query so pages can be fetched concurrently. |
 | `core/page_all.go` | `Page.All`, which returns an iterator over every item of every page. |
-| `core/error_message.go` | Errors lead with the message, code and request ID of the API's error body. |
+| `core/error_message.go` | Errors lead with the message, code and request ID of the API's error body, or the status text for any other body. |
+| `internal/request_checks.go` | Rejects a request with an empty path parameter, trims the base URL's trailing slash, and skips a retry when the server asks for a wait longer than a minute. |
+| `doc.go`, `client/doc.go`, `core/doc.go`, `option/doc.go` | Package documentation for pkg.go.dev. |
 | `sdk_test.go`, `live_test.go`, `example_test.go` | Offline tests against a local server, tests against the live API, and the examples shown on pkg.go.dev. |
 
 `scripts/generate.sh` prepares the document before Fern reads it, and patches the generated code afterwards:

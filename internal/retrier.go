@@ -162,6 +162,10 @@ func (r *Retrier) run(
 			return nil, retryError
 		}
 
+		if waitsLongerThan(response, maxRetryDelay) {
+			return nil, retryError
+		}
+
 		delay, err := r.retryDelay(response, retryAttempt)
 		if err != nil {
 			return nil, err
@@ -234,7 +238,7 @@ func (r *Retrier) retryDelay(response *http.Response, retryAttempt uint) (time.D
 	}
 
 	// Then check for industry-standard X-RateLimit-Reset header, applying positive jitter
-	if rateLimitReset := response.Header.Get("X-RateLimit-Reset"); rateLimitReset != "" {
+	if rateLimitReset := response.Header.Get("X-RateLimit-Reset"); rateLimitReset != "" && response.StatusCode == http.StatusTooManyRequests {
 		if resetTimestamp, err := strconv.ParseInt(rateLimitReset, 10, 64); err == nil {
 			// Assume Unix timestamp in seconds
 			resetTime := time.Unix(resetTimestamp, 0)

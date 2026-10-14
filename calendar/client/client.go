@@ -19,7 +19,7 @@ type Client struct {
 }
 
 func NewClient(options *core.RequestOptions) *Client {
-	if options.APIKey == "" {
+	if options.APIKey == "" && options.APIKeyFunc == nil {
 		options.APIKey = os.Getenv("ROICAI_API_KEY")
 	}
 	return &Client{

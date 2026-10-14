@@ -22,7 +22,7 @@ type Client struct {
 }
 
 func NewClient(options *core.RequestOptions) *Client {
-	if options.APIKey == "" {
+	if options.APIKey == "" && options.APIKeyFunc == nil {
 		options.APIKey = os.Getenv("ROICAI_API_KEY")
 	}
 	return &Client{
@@ -69,9 +69,7 @@ func (c *Client) List(
 		options.ToHeader(),
 	)
 	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
-		if pageRequest.Cursor != nil {
-			queryParams.Set("page", *pageRequest.Cursor)
-		}
+		queryParams := internal.WithPageToken(queryParams, pageRequest.Cursor)
 		nextURL := endpointURL
 		if len(queryParams) > 0 {
 			nextURL += "?" + queryParams.Encode()
@@ -140,9 +138,7 @@ func (c *Client) Search(
 		options.ToHeader(),
 	)
 	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
-		if pageRequest.Cursor != nil {
-			queryParams.Set("page", *pageRequest.Cursor)
-		}
+		queryParams := internal.WithPageToken(queryParams, pageRequest.Cursor)
 		nextURL := endpointURL
 		if len(queryParams) > 0 {
 			nextURL += "?" + queryParams.Encode()

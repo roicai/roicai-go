@@ -165,7 +165,7 @@ func TestRetryExhaustionWithGzipErrorResponse(t *testing.T) {
 	)
 
 	require.IsType(t, &core.APIError{}, err)
-	require.EqualError(t, err, "500: retry failed")
+	require.EqualError(t, err, "500: Internal Server Error: retry failed")
 }
 
 // newTestRetryServer returns a new *httptest.Server configured with the

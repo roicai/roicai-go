@@ -8,6 +8,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -15,6 +16,7 @@ import (
 
 	roicai "github.com/roicai/roicai-go"
 	"github.com/roicai/roicai-go/client"
+	"github.com/roicai/roicai-go/core"
 	"github.com/roicai/roicai-go/option"
 )
 
@@ -256,5 +258,153 @@ func TestErrors(t *testing.T) {
 	want := "404: No ticker matches the supplied identifier. (code: resource_missing, request_id: req_123)"
 	if err.Error() != want {
 		t.Errorf("Error() = %q, want %q", err.Error(), want)
+	}
+}
+
+func TestFetchesPagesOfOneListConcurrently(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(tickerPage("/v3.0.0/tickers?page=next", "A"))
+	}))
+	t.Cleanup(s.Close)
+	c := client.NewClient(option.WithBaseURL(s.URL), option.WithAPIKey("k"), option.WithoutRetries())
+	ctx := context.Background()
+
+	first, err := c.Tickers.List(ctx, &roicai.ListTickersRequest{Exchange: roicai.String("NASDAQ")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var wg sync.WaitGroup
+	for range 20 {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if _, err := first.GetNextPage(ctx); err != nil {
+				t.Error(err)
+			}
+		}()
+	}
+	wg.Wait()
+}
+
+func TestRejectsAnEmptyPathParameter(t *testing.T) {
+	s := newServer(t)
+
+	_, err := s.client().Tickers.Retrieve(context.Background(), &roicai.RetrieveTickerRequest{Identifier: ""})
+
+	if err == nil || !strings.Contains(err.Error(), "path parameter") {
+		t.Errorf("err = %v, want an empty path parameter error", err)
+	}
+	if len(s.requests) != 0 {
+		t.Errorf("made %d requests, want none", len(s.requests))
+	}
+}
+
+func TestTrimsTrailingSlashesFromTheBaseURL(t *testing.T) {
+	s := newServer(t, response{200, ticker("NASDAQ:AAPL")})
+
+	_, err := s.client(option.WithBaseURL(s.URL+"/")).Tickers.Retrieve(context.Background(), &roicai.RetrieveTickerRequest{Identifier: "NASDAQ:AAPL"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got := s.requests[0].URL.Path; got != "/v3.0.0/tickers/NASDAQ:AAPL" {
+		t.Errorf("path = %q", got)
+	}
+}
+
+func TestDoesNotRetryWhenTheServerAsksForALongWait(t *testing.T) {
+	var requests int
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests++
+		w.Header().Set("Retry-After", "36000")
+		w.WriteHeader(http.StatusTooManyRequests)
+	}))
+	t.Cleanup(s.Close)
+	c := client.NewClient(option.WithBaseURL(s.URL), option.WithAPIKey("k"), option.WithMaxAttempts(3))
+	start := time.Now()
+
+	_, err := c.Tickers.Retrieve(context.Background(), &roicai.RetrieveTickerRequest{Identifier: "NASDAQ:AAPL"})
+
+	var tooMany *roicai.TooManyRequestsError
+	if !errors.As(err, &tooMany) {
+		t.Errorf("err = %v, want a *roicai.TooManyRequestsError", err)
+	}
+	if requests != 1 || time.Since(start) > 5*time.Second {
+		t.Errorf("made %d requests in %s, want 1 at once", requests, time.Since(start))
+	}
+}
+
+func TestRetriesAServerErrorDespiteAFarRateLimitReset(t *testing.T) {
+	var requests int
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests++
+		w.Header().Set("X-RateLimit-Reset", strconv.FormatInt(time.Now().Add(10*time.Hour).Unix(), 10))
+		if requests == 1 {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(ticker("NASDAQ:AAPL"))
+	}))
+	t.Cleanup(s.Close)
+	c := client.NewClient(option.WithBaseURL(s.URL), option.WithAPIKey("k"))
+	start := time.Now()
+
+	_, err := c.Tickers.Retrieve(context.Background(), &roicai.RetrieveTickerRequest{Identifier: "NASDAQ:AAPL"})
+
+	if err != nil || requests != 2 {
+		t.Errorf("err = %v after %d requests, want success on the second", err, requests)
+	}
+	if elapsed := time.Since(start); elapsed > 5*time.Second {
+		t.Errorf("took %s, want the one-second backoff rather than the rate-limit reset", elapsed)
+	}
+}
+
+func TestAPIKeyFuncTakesPrecedenceOverTheEnvironment(t *testing.T) {
+	t.Setenv("ROICAI_API_KEY", "env-key")
+	s := newServer(t, response{200, ticker("NASDAQ:AAPL")})
+	c := client.NewClient(option.WithBaseURL(s.URL), option.WithAPIKeyFunc(func() (string, error) { return "func-key", nil }))
+
+	if _, err := c.Tickers.Retrieve(context.Background(), &roicai.RetrieveTickerRequest{Identifier: "NASDAQ:AAPL"}); err != nil {
+		t.Fatal(err)
+	}
+
+	if got := s.requests[0].Header.Get("Authorization"); got != "Bearer func-key" {
+		t.Errorf("Authorization = %q, want Bearer func-key", got)
+	}
+}
+
+func TestErrorsWithoutTheAPIsErrorBody(t *testing.T) {
+	for _, tc := range []struct {
+		name, contentType, body string
+		status                  int
+		want                    string
+		as                      func(error) bool
+	}{
+		{"empty 404", "", "", 404, "404: Not Found", func(err error) bool { var e *roicai.NotFoundError; return errors.As(err, &e) && e.Body == nil }},
+		{"HTML 503", "text/html", "<html><body><h1>503 Service Temporarily Unavailable</h1></body></html>", 503, "503: Service Unavailable", func(err error) bool { var e *roicai.ServiceUnavailableError; return errors.As(err, &e) }},
+		{"plain 502", "text/plain", "upstream connect error", 502, "502: Bad Gateway: upstream connect error", func(err error) bool { var e *core.APIError; return errors.As(err, &e) && e.StatusCode == 502 }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if tc.contentType != "" {
+					w.Header().Set("Content-Type", tc.contentType)
+				}
+				w.WriteHeader(tc.status)
+				w.Write([]byte(tc.body))
+			}))
+			t.Cleanup(s.Close)
+			c := client.NewClient(option.WithBaseURL(s.URL), option.WithAPIKey("k"), option.WithoutRetries())
+
+			_, err := c.Tickers.Retrieve(context.Background(), &roicai.RetrieveTickerRequest{Identifier: "NASDAQ:AAPL"})
+
+			if err == nil || err.Error() != tc.want {
+				t.Errorf("Error() = %v, want %q", err, tc.want)
+			}
+			if !tc.as(err) {
+				t.Errorf("err = %#v doesn't have the expected type", err)
+			}
+		})
 	}
 }
