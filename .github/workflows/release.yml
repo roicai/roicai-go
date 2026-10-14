@@ -1,0 +1,39 @@
+name: Release
+
+# Go modules are published by their git tags: once a vX.Y.Z tag exists, `go get`
+# can fetch it. When a GitHub release is published, this checks that the tag
+# matches internal/version.go, runs the tests, and asks the Go module proxy to
+# fetch the version, so pkg.go.dev lists it right away.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Check that the tag matches internal/version.go
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          version="$(sed -n 's/^const Version = "\(.*\)"$/\1/p' internal/version.go)"
+          if [[ "$TAG" != "v$version" ]]; then
+            echo "Release tag $TAG does not match internal/version.go version $version (expected v$version)" >&2
+            exit 1
+          fi
+      - run: go test ./...
+        env:
+          ROICAI_API_KEY: ${{ secrets.ROICAI_API_KEY }}
+      - name: Publish to the Go module proxy
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          cd "$(mktemp -d)"
+          GOPROXY=https://proxy.golang.org GOFLAGS=-mod=mod go list -m "github.com/roicai/roicai-go@$TAG"

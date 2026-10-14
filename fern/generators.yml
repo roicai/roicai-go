@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://schema.buildwithfern.dev/generators-yml.json
+# scripts/generate.sh writes build/openapi.sdk.json and runs this with
+# `fern generate --local`, which runs the generator in Docker without a Fern
+# account. Pin both versions: change them in a pull request of their own and
+# review the diff they make.
+api:
+  specs:
+    - openapi: ../build/openapi.sdk.json
+default-group: local
+groups:
+  local:
+    generators:
+      - name: fernapi/fern-go-sdk
+        version: 1.70.4
+        output:
+          location: local-file-system
+          path: ../build/generated
+        config:
+          module:
+            path: github.com/roicai/roicai-go
+            # Page.All returns an iter.Seq2, which needs Go 1.23.
+            version: "1.23"
+          packageName: roicai
+          clientName: Client
+          clientConstructorName: NewClient
+          # Local generation sends no Fern or User-Agent headers either way;
+          # scripts/patch_generated.py adds the User-Agent.
+          omitFernHeaders: true
+          enableWireTests: false
