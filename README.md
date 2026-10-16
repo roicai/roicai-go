@@ -1,13 +1,13 @@
-# ROIC.ai Go Library
+# ROIC.AI Go Library
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/roicai/roicai-go.svg)](https://pkg.go.dev/github.com/roicai/roicai-go)
 [![Build Status](https://github.com/roicai/roicai-go/actions/workflows/ci.yml/badge.svg)](https://github.com/roicai/roicai-go/actions/workflows/ci.yml)
 
-The ROIC.ai Go library is the official Go client for the [ROIC.ai](https://roic.ai) financial data API and stock API. Use it to get fundamentals for public companies, such as income statements, balance sheets, cash flow statements, financial ratios and valuation multiples, and earnings call transcripts. It also covers historical and latest stock prices, SEC filings and other company documents, the earnings calendar, company profiles and forex rates.
+The ROIC.AI Go library is the official Go client for the [ROIC.AI](https://roic.ai) financial data API and stock API. Use it to get fundamentals for public companies, such as income statements, balance sheets, cash flow statements, financial ratios and valuation multiples, and earnings call transcripts. It also covers historical and latest stock prices, SEC filings and other company documents, the earnings calendar, company profiles and forex rates.
 
 ## Documentation
 
-See the [ROIC.ai API reference](https://api.roic.ai/v3.0.0/openapi) for every endpoint, parameter and field, and the [API guides](https://www.roic.ai/api) for authentication, plans and response formats. The [Go package reference](https://pkg.go.dev/github.com/roicai/roicai-go) lists every type and method.
+See the [ROIC.AI API reference](https://api.roic.ai/v3.0.0/openapi) for every endpoint, parameter and field, and the [API guides](https://www.roic.ai/api) for authentication, plans and response formats. The [Go package reference](https://pkg.go.dev/github.com/roicai/roicai-go) lists every type and method.
 
 ## Requirements
 
@@ -23,7 +23,7 @@ go get github.com/roicai/roicai-go
 
 ## Usage
 
-The library needs your ROIC.ai API key, which you can find on the [authentication page](https://www.roic.ai/api/docs/authentication) once you sign in. By default the client reads it from the `ROICAI_API_KEY` environment variable:
+The library needs your ROIC.AI API key, which you can find on the [authentication page](https://www.roic.ai/api/docs/authentication) once you sign in. By default the client reads it from the `ROICAI_API_KEY` environment variable:
 
 ```go
 package main
@@ -595,7 +595,7 @@ fmt.Println(rate.Date.Format("2006-01-02"), rate.Close)
 
 ## Support
 
-Report bugs and request features in [GitHub issues](https://github.com/roicai/roicai-go/issues). For questions about your account, plan or the data, contact ROIC.ai through [roic.ai](https://roic.ai).
+Report bugs and request features in [GitHub issues](https://github.com/roicai/roicai-go/issues). For questions about your account, plan or the data, contact ROIC.AI through [roic.ai](https://roic.ai).
 
 The library follows semver. While it is `v0`, a minor version can include breaking changes, so pin the minor version you use.
 
