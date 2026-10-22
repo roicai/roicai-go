@@ -13410,6 +13410,14 @@ func TestSettersCompanyProfile(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAiDescription", func(t *testing.T) {
+		obj := &CompanyProfile{}
+		var fernTestValueAiDescription *string
+		obj.SetAiDescription(fernTestValueAiDescription)
+		assert.Equal(t, fernTestValueAiDescription, obj.AiDescription)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSector", func(t *testing.T) {
 		obj := &CompanyProfile{}
 		var fernTestValueSector *string
@@ -13862,6 +13870,39 @@ func TestGettersCompanyProfile(t *testing.T) {
 			}
 		}()
 		_ = obj.GetShortDescription() // Should return zero value
+	})
+
+	t.Run("GetAiDescription", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyProfile{}
+		var expected *string
+		obj.AiDescription = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAiDescription(), "getter should return the property value")
+	})
+
+	t.Run("GetAiDescription_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyProfile{}
+		obj.AiDescription = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAiDescription(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAiDescription_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CompanyProfile
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAiDescription() // Should return zero value
 	})
 
 	t.Run("GetSector", func(t *testing.T) {
@@ -14713,6 +14754,37 @@ func TestSettersMarkExplicitCompanyProfile(t *testing.T) {
 
 		// Act
 		obj.SetShortDescription(fernTestValueShortDescription)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAiDescription_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyProfile{}
+		var fernTestValueAiDescription *string
+
+		// Act
+		obj.SetAiDescription(fernTestValueAiDescription)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -51428,6 +51500,7 @@ func TestRequiredNullableRoundTripCompanyProfile(t *testing.T) {
 		"name",
 		"description",
 		"short_description",
+		"ai_description",
 		"sector",
 		"industry",
 		"fundamental_currency",
@@ -51452,7 +51525,7 @@ func TestRequiredNullableRoundTripCompanyProfile(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CompanyProfile
-		require.NoError(t, json.Unmarshal([]byte(`{"mic":null,"exchange_name":null,"exchange_local_name":null,"name":null,"description":null,"short_description":null,"sector":null,"industry":null,"fundamental_currency":null,"cik":null,"cusip":null,"isin":null,"ceo":null,"founded":null,"website":null,"phone":null,"number_of_employees":null,"number_of_shareholders":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"mic":null,"exchange_name":null,"exchange_local_name":null,"name":null,"description":null,"short_description":null,"ai_description":null,"sector":null,"industry":null,"fundamental_currency":null,"cik":null,"cusip":null,"isin":null,"ceo":null,"founded":null,"website":null,"phone":null,"number_of_employees":null,"number_of_shareholders":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

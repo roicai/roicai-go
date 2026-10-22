@@ -3956,22 +3956,23 @@ var (
 	companyProfileFieldName                 = big.NewInt(1 << 8)
 	companyProfileFieldDescription          = big.NewInt(1 << 9)
 	companyProfileFieldShortDescription     = big.NewInt(1 << 10)
-	companyProfileFieldSector               = big.NewInt(1 << 11)
-	companyProfileFieldIndustry             = big.NewInt(1 << 12)
-	companyProfileFieldFundamentalCurrency  = big.NewInt(1 << 13)
-	companyProfileFieldCik                  = big.NewInt(1 << 14)
-	companyProfileFieldCusip                = big.NewInt(1 << 15)
-	companyProfileFieldIsin                 = big.NewInt(1 << 16)
-	companyProfileFieldCeo                  = big.NewInt(1 << 17)
-	companyProfileFieldFounded              = big.NewInt(1 << 18)
-	companyProfileFieldWebsite              = big.NewInt(1 << 19)
-	companyProfileFieldPhone                = big.NewInt(1 << 20)
-	companyProfileFieldNumberOfEmployees    = big.NewInt(1 << 21)
-	companyProfileFieldNumberOfShareholders = big.NewInt(1 << 22)
-	companyProfileFieldAddress              = big.NewInt(1 << 23)
-	companyProfileFieldIpo                  = big.NewInt(1 << 24)
-	companyProfileFieldReportingCalendar    = big.NewInt(1 << 25)
-	companyProfileFieldEarningsSchedule     = big.NewInt(1 << 26)
+	companyProfileFieldAiDescription        = big.NewInt(1 << 11)
+	companyProfileFieldSector               = big.NewInt(1 << 12)
+	companyProfileFieldIndustry             = big.NewInt(1 << 13)
+	companyProfileFieldFundamentalCurrency  = big.NewInt(1 << 14)
+	companyProfileFieldCik                  = big.NewInt(1 << 15)
+	companyProfileFieldCusip                = big.NewInt(1 << 16)
+	companyProfileFieldIsin                 = big.NewInt(1 << 17)
+	companyProfileFieldCeo                  = big.NewInt(1 << 18)
+	companyProfileFieldFounded              = big.NewInt(1 << 19)
+	companyProfileFieldWebsite              = big.NewInt(1 << 20)
+	companyProfileFieldPhone                = big.NewInt(1 << 21)
+	companyProfileFieldNumberOfEmployees    = big.NewInt(1 << 22)
+	companyProfileFieldNumberOfShareholders = big.NewInt(1 << 23)
+	companyProfileFieldAddress              = big.NewInt(1 << 24)
+	companyProfileFieldIpo                  = big.NewInt(1 << 25)
+	companyProfileFieldReportingCalendar    = big.NewInt(1 << 26)
+	companyProfileFieldEarningsSchedule     = big.NewInt(1 << 27)
 )
 
 // companyProfileNullableFields maps the wire names of CompanyProfile's nullable fields (required or optional) to their field bits.
@@ -3982,6 +3983,7 @@ var companyProfileNullableFields = map[string]*big.Int{
 	"name":                   companyProfileFieldName,
 	"description":            companyProfileFieldDescription,
 	"short_description":      companyProfileFieldShortDescription,
+	"ai_description":         companyProfileFieldAiDescription,
 	"sector":                 companyProfileFieldSector,
 	"industry":               companyProfileFieldIndustry,
 	"fundamental_currency":   companyProfileFieldFundamentalCurrency,
@@ -4011,6 +4013,7 @@ type CompanyProfile struct {
 	Name                 *string                          `json:"name,omitempty" url:"name,omitempty"`
 	Description          *string                          `json:"description,omitempty" url:"description,omitempty"`
 	ShortDescription     *string                          `json:"short_description,omitempty" url:"short_description,omitempty"`
+	AiDescription        *string                          `json:"ai_description,omitempty" url:"ai_description,omitempty"`
 	Sector               *string                          `json:"sector,omitempty" url:"sector,omitempty"`
 	Industry             *string                          `json:"industry,omitempty" url:"industry,omitempty"`
 	FundamentalCurrency  *string                          `json:"fundamental_currency,omitempty" url:"fundamental_currency,omitempty"`
@@ -4110,6 +4113,13 @@ func (c *CompanyProfile) GetShortDescription() *string {
 		return nil
 	}
 	return c.ShortDescription
+}
+
+func (c *CompanyProfile) GetAiDescription() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AiDescription
 }
 
 func (c *CompanyProfile) GetSector() *string {
@@ -4315,6 +4325,13 @@ func (c *CompanyProfile) SetDescription(description *string) {
 func (c *CompanyProfile) SetShortDescription(shortDescription *string) {
 	c.ShortDescription = shortDescription
 	c.require(companyProfileFieldShortDescription)
+}
+
+// SetAiDescription sets the AiDescription field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyProfile) SetAiDescription(aiDescription *string) {
+	c.AiDescription = aiDescription
+	c.require(companyProfileFieldAiDescription)
 }
 
 // SetSector sets the Sector field and marks it as non-optional;
