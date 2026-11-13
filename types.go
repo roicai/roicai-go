@@ -3956,22 +3956,23 @@ var (
 	companyProfileFieldName                 = big.NewInt(1 << 8)
 	companyProfileFieldDescription          = big.NewInt(1 << 9)
 	companyProfileFieldShortDescription     = big.NewInt(1 << 10)
-	companyProfileFieldSector               = big.NewInt(1 << 11)
-	companyProfileFieldIndustry             = big.NewInt(1 << 12)
-	companyProfileFieldFundamentalCurrency  = big.NewInt(1 << 13)
-	companyProfileFieldCik                  = big.NewInt(1 << 14)
-	companyProfileFieldCusip                = big.NewInt(1 << 15)
-	companyProfileFieldIsin                 = big.NewInt(1 << 16)
-	companyProfileFieldCeo                  = big.NewInt(1 << 17)
-	companyProfileFieldFounded              = big.NewInt(1 << 18)
-	companyProfileFieldWebsite              = big.NewInt(1 << 19)
-	companyProfileFieldPhone                = big.NewInt(1 << 20)
-	companyProfileFieldNumberOfEmployees    = big.NewInt(1 << 21)
-	companyProfileFieldNumberOfShareholders = big.NewInt(1 << 22)
-	companyProfileFieldAddress              = big.NewInt(1 << 23)
-	companyProfileFieldIpo                  = big.NewInt(1 << 24)
-	companyProfileFieldReportingCalendar    = big.NewInt(1 << 25)
-	companyProfileFieldEarningsSchedule     = big.NewInt(1 << 26)
+	companyProfileFieldAiDescription        = big.NewInt(1 << 11)
+	companyProfileFieldSector               = big.NewInt(1 << 12)
+	companyProfileFieldIndustry             = big.NewInt(1 << 13)
+	companyProfileFieldFundamentalCurrency  = big.NewInt(1 << 14)
+	companyProfileFieldCik                  = big.NewInt(1 << 15)
+	companyProfileFieldCusip                = big.NewInt(1 << 16)
+	companyProfileFieldIsin                 = big.NewInt(1 << 17)
+	companyProfileFieldCeo                  = big.NewInt(1 << 18)
+	companyProfileFieldFounded              = big.NewInt(1 << 19)
+	companyProfileFieldWebsite              = big.NewInt(1 << 20)
+	companyProfileFieldPhone                = big.NewInt(1 << 21)
+	companyProfileFieldNumberOfEmployees    = big.NewInt(1 << 22)
+	companyProfileFieldNumberOfShareholders = big.NewInt(1 << 23)
+	companyProfileFieldAddress              = big.NewInt(1 << 24)
+	companyProfileFieldIpo                  = big.NewInt(1 << 25)
+	companyProfileFieldReportingCalendar    = big.NewInt(1 << 26)
+	companyProfileFieldEarningsSchedule     = big.NewInt(1 << 27)
 )
 
 // companyProfileNullableFields maps the wire names of CompanyProfile's nullable fields (required or optional) to their field bits.
@@ -3982,6 +3983,7 @@ var companyProfileNullableFields = map[string]*big.Int{
 	"name":                   companyProfileFieldName,
 	"description":            companyProfileFieldDescription,
 	"short_description":      companyProfileFieldShortDescription,
+	"ai_description":         companyProfileFieldAiDescription,
 	"sector":                 companyProfileFieldSector,
 	"industry":               companyProfileFieldIndustry,
 	"fundamental_currency":   companyProfileFieldFundamentalCurrency,
@@ -4011,6 +4013,7 @@ type CompanyProfile struct {
 	Name                 *string                          `json:"name,omitempty" url:"name,omitempty"`
 	Description          *string                          `json:"description,omitempty" url:"description,omitempty"`
 	ShortDescription     *string                          `json:"short_description,omitempty" url:"short_description,omitempty"`
+	AiDescription        *string                          `json:"ai_description,omitempty" url:"ai_description,omitempty"`
 	Sector               *string                          `json:"sector,omitempty" url:"sector,omitempty"`
 	Industry             *string                          `json:"industry,omitempty" url:"industry,omitempty"`
 	FundamentalCurrency  *string                          `json:"fundamental_currency,omitempty" url:"fundamental_currency,omitempty"`
@@ -4110,6 +4113,13 @@ func (c *CompanyProfile) GetShortDescription() *string {
 		return nil
 	}
 	return c.ShortDescription
+}
+
+func (c *CompanyProfile) GetAiDescription() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AiDescription
 }
 
 func (c *CompanyProfile) GetSector() *string {
@@ -4315,6 +4325,13 @@ func (c *CompanyProfile) SetDescription(description *string) {
 func (c *CompanyProfile) SetShortDescription(shortDescription *string) {
 	c.ShortDescription = shortDescription
 	c.require(companyProfileFieldShortDescription)
+}
+
+// SetAiDescription sets the AiDescription field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyProfile) SetAiDescription(aiDescription *string) {
+	c.AiDescription = aiDescription
+	c.require(companyProfileFieldAiDescription)
 }
 
 // SetSector sets the Sector field and marks it as non-optional;
@@ -11800,6 +11817,361 @@ func NewLiquidityFinancialPeriodObjectFromString(s string) (LiquidityFinancialPe
 
 func (l LiquidityFinancialPeriodObject) Ptr() *LiquidityFinancialPeriodObject {
 	return &l
+}
+
+var (
+	newsArticleFieldID          = big.NewInt(1 << 0)
+	newsArticleFieldTitle       = big.NewInt(1 << 1)
+	newsArticleFieldSummary     = big.NewInt(1 << 2)
+	newsArticleFieldURL         = big.NewInt(1 << 3)
+	newsArticleFieldSite        = big.NewInt(1 << 4)
+	newsArticleFieldImageURL    = big.NewInt(1 << 5)
+	newsArticleFieldSymbols     = big.NewInt(1 << 6)
+	newsArticleFieldPublishedAt = big.NewInt(1 << 7)
+)
+
+// newsArticleNullableFields maps the wire names of NewsArticle's nullable fields (required or optional) to their field bits.
+var newsArticleNullableFields = map[string]*big.Int{
+	"summary":   newsArticleFieldSummary,
+	"site":      newsArticleFieldSite,
+	"image_url": newsArticleFieldImageURL,
+}
+
+type NewsArticle struct {
+	ID    string `json:"id" url:"id"`
+	Title string `json:"title" url:"title"`
+	// A short teaser of the article, or null when there is none.
+	Summary *string `json:"summary,omitempty" url:"summary,omitempty"`
+	// Where the article is published: the publisher's page, or roic.ai for articles ROIC writes.
+	URL string `json:"url" url:"url"`
+	// The publisher's domain, e.g. `wsj.com`. `roic.ai` for articles ROIC writes.
+	Site     *string `json:"site,omitempty" url:"site,omitempty"`
+	ImageURL *string `json:"image_url,omitempty" url:"image_url,omitempty"`
+	// The qualified ticker symbols of the companies the article is about, e.g. `NASDAQ:AAPL`, in alphabetical order. Can be empty.
+	Symbols     []string  `json:"symbols" url:"symbols"`
+	PublishedAt time.Time `json:"published_at" url:"published_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (n *NewsArticle) GetID() string {
+	if n == nil {
+		return ""
+	}
+	return n.ID
+}
+
+func (n *NewsArticle) GetTitle() string {
+	if n == nil {
+		return ""
+	}
+	return n.Title
+}
+
+func (n *NewsArticle) GetSummary() *string {
+	if n == nil {
+		return nil
+	}
+	return n.Summary
+}
+
+func (n *NewsArticle) GetURL() string {
+	if n == nil {
+		return ""
+	}
+	return n.URL
+}
+
+func (n *NewsArticle) GetSite() *string {
+	if n == nil {
+		return nil
+	}
+	return n.Site
+}
+
+func (n *NewsArticle) GetImageURL() *string {
+	if n == nil {
+		return nil
+	}
+	return n.ImageURL
+}
+
+func (n *NewsArticle) GetSymbols() []string {
+	if n == nil {
+		return nil
+	}
+	return n.Symbols
+}
+
+func (n *NewsArticle) GetPublishedAt() time.Time {
+	if n == nil {
+		return time.Time{}
+	}
+	return n.PublishedAt
+}
+
+func (n *NewsArticle) GetExtraProperties() map[string]interface{} {
+	if n == nil {
+		return nil
+	}
+	return n.extraProperties
+}
+
+func (n *NewsArticle) require(field *big.Int) {
+	next := new(big.Int)
+	if n.explicitFields != nil {
+		next.Set(n.explicitFields)
+	}
+	next.Or(next, field)
+	n.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NewsArticle) SetID(id string) {
+	n.ID = id
+	n.require(newsArticleFieldID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NewsArticle) SetTitle(title string) {
+	n.Title = title
+	n.require(newsArticleFieldTitle)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NewsArticle) SetSummary(summary *string) {
+	n.Summary = summary
+	n.require(newsArticleFieldSummary)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NewsArticle) SetURL(url string) {
+	n.URL = url
+	n.require(newsArticleFieldURL)
+}
+
+// SetSite sets the Site field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NewsArticle) SetSite(site *string) {
+	n.Site = site
+	n.require(newsArticleFieldSite)
+}
+
+// SetImageURL sets the ImageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NewsArticle) SetImageURL(imageURL *string) {
+	n.ImageURL = imageURL
+	n.require(newsArticleFieldImageURL)
+}
+
+// SetSymbols sets the Symbols field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NewsArticle) SetSymbols(symbols []string) {
+	n.Symbols = symbols
+	n.require(newsArticleFieldSymbols)
+}
+
+// SetPublishedAt sets the PublishedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NewsArticle) SetPublishedAt(publishedAt time.Time) {
+	n.PublishedAt = publishedAt
+	n.require(newsArticleFieldPublishedAt)
+}
+
+func (n *NewsArticle) UnmarshalJSON(data []byte) error {
+	type embed NewsArticle
+	var unmarshaler = struct {
+		embed
+		PublishedAt *internal.DateTime `json:"published_at"`
+	}{
+		embed: embed(*n),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*n = NewsArticle(unmarshaler.embed)
+	n.PublishedAt = unmarshaler.PublishedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *n)
+	if err != nil {
+		return err
+	}
+	n.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, newsArticleNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		n.require(presentFields)
+	}
+	n.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (n *NewsArticle) MarshalJSON() ([]byte, error) {
+	type embed NewsArticle
+	var marshaler = struct {
+		embed
+		PublishedAt *internal.DateTime `json:"published_at"`
+	}{
+		embed:       embed(*n),
+		PublishedAt: internal.NewDateTime(n.PublishedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, n.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (n *NewsArticle) String() string {
+	if n == nil {
+		return "<nil>"
+	}
+	if len(n.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(n.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(n); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", n)
+}
+
+var (
+	newsArticleListFieldData            = big.NewInt(1 << 0)
+	newsArticleListFieldNextPageURL     = big.NewInt(1 << 1)
+	newsArticleListFieldPreviousPageURL = big.NewInt(1 << 2)
+)
+
+// newsArticleListNullableFields maps the wire names of NewsArticleList's nullable fields (required or optional) to their field bits.
+var newsArticleListNullableFields = map[string]*big.Int{
+	"next_page_url":     newsArticleListFieldNextPageURL,
+	"previous_page_url": newsArticleListFieldPreviousPageURL,
+}
+
+type NewsArticleList struct {
+	Data            []*NewsArticle `json:"data" url:"data"`
+	NextPageURL     *string        `json:"next_page_url,omitempty" url:"next_page_url,omitempty"`
+	PreviousPageURL *string        `json:"previous_page_url,omitempty" url:"previous_page_url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (n *NewsArticleList) GetData() []*NewsArticle {
+	if n == nil {
+		return nil
+	}
+	return n.Data
+}
+
+func (n *NewsArticleList) GetNextPageURL() *string {
+	if n == nil {
+		return nil
+	}
+	return n.NextPageURL
+}
+
+func (n *NewsArticleList) GetPreviousPageURL() *string {
+	if n == nil {
+		return nil
+	}
+	return n.PreviousPageURL
+}
+
+func (n *NewsArticleList) GetExtraProperties() map[string]interface{} {
+	if n == nil {
+		return nil
+	}
+	return n.extraProperties
+}
+
+func (n *NewsArticleList) require(field *big.Int) {
+	next := new(big.Int)
+	if n.explicitFields != nil {
+		next.Set(n.explicitFields)
+	}
+	next.Or(next, field)
+	n.explicitFields = next
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NewsArticleList) SetData(data []*NewsArticle) {
+	n.Data = data
+	n.require(newsArticleListFieldData)
+}
+
+// SetNextPageURL sets the NextPageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NewsArticleList) SetNextPageURL(nextPageURL *string) {
+	n.NextPageURL = nextPageURL
+	n.require(newsArticleListFieldNextPageURL)
+}
+
+// SetPreviousPageURL sets the PreviousPageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NewsArticleList) SetPreviousPageURL(previousPageURL *string) {
+	n.PreviousPageURL = previousPageURL
+	n.require(newsArticleListFieldPreviousPageURL)
+}
+
+func (n *NewsArticleList) UnmarshalJSON(data []byte) error {
+	type unmarshaler NewsArticleList
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*n = NewsArticleList(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *n)
+	if err != nil {
+		return err
+	}
+	n.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, newsArticleListNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		n.require(presentFields)
+	}
+	n.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (n *NewsArticleList) MarshalJSON() ([]byte, error) {
+	type embed NewsArticleList
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*n),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, n.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (n *NewsArticleList) String() string {
+	if n == nil {
+		return "<nil>"
+	}
+	if len(n.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(n.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(n); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", n)
 }
 
 type Order string
