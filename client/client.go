@@ -19,6 +19,7 @@ import (
 	industries "github.com/roicai/roicai-go/industries"
 	internal "github.com/roicai/roicai-go/internal"
 	markets "github.com/roicai/roicai-go/markets"
+	newsclient "github.com/roicai/roicai-go/news/client"
 	option "github.com/roicai/roicai-go/option"
 	sectors "github.com/roicai/roicai-go/sectors"
 	stockpricesclient "github.com/roicai/roicai-go/stockprices/client"
@@ -38,6 +39,7 @@ type Client struct {
 	ForexPairs    *forexpairs.Client
 	ForexPrices   *forexpricesclient.Client
 	EarningsCalls *earningscallsclient.Client
+	News          *newsclient.Client
 	CompanyEvents *companyevents.Client
 	Calendar      *calendarclient.Client
 	Companies     *companiesclient.Client
@@ -66,6 +68,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		ForexPairs:    forexpairs.NewClient(options),
 		ForexPrices:   forexpricesclient.NewClient(options),
 		EarningsCalls: earningscallsclient.NewClient(options),
+		News:          newsclient.NewClient(options),
 		CompanyEvents: companyevents.NewClient(options),
 		Calendar:      calendarclient.NewClient(options),
 		Companies:     companiesclient.NewClient(options),

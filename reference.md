@@ -1210,6 +1210,126 @@ client.EarningsCalls.Retrieve(
 </dl>
 </details>
 
+## News
+<details><summary><code>client.News.List() -> *roicai.NewsArticleList</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns news articles from publishers and articles ROIC writes, newest first. Each article appears once, with every company it is about. History follows the plan's lookback limit. Filter by a `published_at` range.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &roicai.ListNewsRequest{
+    PublishedAtGte: roicai.Time(
+        roicai.MustParseDateTime(
+            "2026-11-11T14:37:34Z",
+        ),
+    ),
+    PublishedAtGt: roicai.Time(
+        roicai.MustParseDateTime(
+            "2026-11-11T14:37:34Z",
+        ),
+    ),
+    PublishedAtLte: roicai.Time(
+        roicai.MustParseDateTime(
+            "2026-11-11T14:37:34Z",
+        ),
+    ),
+    PublishedAtLt: roicai.Time(
+        roicai.MustParseDateTime(
+            "2026-11-11T14:37:34Z",
+        ),
+    ),
+}
+client.News.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**publishedAtGte:** `*time.Time` — Return news published at or after this RFC 3339 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**publishedAtGt:** `*time.Time` — Return news published after this RFC 3339 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**publishedAtLte:** `*time.Time` — Return news published at or before this RFC 3339 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**publishedAtLt:** `*time.Time` — Return news published before this RFC 3339 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` — Maximum number of resources to return. Defaults to 25.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*string` — Opaque page token from a previous response. Prefer following the returned page URLs directly.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Company Events
 <details><summary><code>client.CompanyEvents.List() -> *roicai.CompanyEventList</code></summary>
 <dl>
@@ -1901,7 +2021,7 @@ client.Documents.Audio.Retrieve(
 <dl>
 <dd>
 
-Returns the plain-text transcript of an earnings event, without speaker labels or line breaks, from a ready Quartr transcript when one exists, otherwise from the FMP transcript. Free plans can read each company’s latest two events; Individual plans follow the plan’s lookback; Professional and Enterprise plans read everything. Use the `trraw_` id from the event listing.
+Returns the plain-text transcript of an earnings event, without speaker labels or line breaks. Free plans can read each company’s latest two events; Individual plans follow the plan’s lookback; Professional and Enterprise plans read everything. Use the `trraw_` id from the event listing.
 </dd>
 </dl>
 </dd>
@@ -1962,7 +2082,7 @@ client.Documents.Transcripts.Raw.Retrieve(
 <dl>
 <dd>
 
-Returns the speaker-labelled transcript of an earnings event: ordered segments with a `speaker_id`, and a `speakers` map with each speaker’s name, role, and company where known. Quartr transcripts prefer the human-edited edition, then the aligned edition; FMP transcripts derive speakers from the turn names. Professional and Enterprise plans only. Use the `tredit_` id from the event listing.
+Returns the speaker-labelled transcript of an earnings event: ordered segments with a `speaker_id`, and a `speakers` map with each speaker’s name, role, and company where known. The human-edited edition is preferred when one exists. Professional and Enterprise plans only. Use the `tredit_` id from the event listing.
 </dd>
 </dl>
 </dd>
@@ -4303,6 +4423,135 @@ client.Fundamentals.Ratios.YieldAnalysis.List(
 <dd>
 
 **limit:** `*int` — Maximum number of resources to return. Defaults to 50.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*string` — Opaque page token from a previous response. Prefer following the returned page URLs directly.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## News Company
+<details><summary><code>client.News.Company.List(Identifier) -> *roicai.NewsArticleList</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the news articles about one company, newest first. Identify the company by an exchange and symbol separated by a colon (e.g. `NASDAQ:AAPL`), a ticker ID, or a FIGI; articles about any of its listings are included. Each article appears once, with every company it is about. History follows the plan's lookback limit. Filter by a `published_at` range.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &news.ListCompanyNewsRequest{
+    Identifier: "NASDAQ:AAPL",
+    PublishedAtGte: roicai.Time(
+        roicai.MustParseDateTime(
+            "2026-11-11T14:37:34Z",
+        ),
+    ),
+    PublishedAtGt: roicai.Time(
+        roicai.MustParseDateTime(
+            "2026-11-11T14:37:34Z",
+        ),
+    ),
+    PublishedAtLte: roicai.Time(
+        roicai.MustParseDateTime(
+            "2026-11-11T14:37:34Z",
+        ),
+    ),
+    PublishedAtLt: roicai.Time(
+        roicai.MustParseDateTime(
+            "2026-11-11T14:37:34Z",
+        ),
+    ),
+}
+client.News.Company.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**identifier:** `string` — The company whose news to list. Accepts an exchange and symbol separated by a colon (e.g. `NASDAQ:AAPL`), a ticker ID, or a FIGI.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**publishedAtGte:** `*time.Time` — Return news published at or after this RFC 3339 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**publishedAtGt:** `*time.Time` — Return news published after this RFC 3339 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**publishedAtLte:** `*time.Time` — Return news published at or before this RFC 3339 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**publishedAtLt:** `*time.Time` — Return news published before this RFC 3339 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` — Maximum number of resources to return. Defaults to 25.
     
 </dd>
 </dl>
